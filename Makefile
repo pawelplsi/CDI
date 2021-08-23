@@ -1,17 +1,17 @@
-MCU=attiny13
-F_CPU=9600000
+MCU=atmega8
+F_CPU=8000000
 CC=avr-gcc
 LD=avr-ld
 OBJCOPY=avr-objcopy
 SIZE=avr-size
 AVRDUDE=avrdude
-CFLAGS=-std=c99 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I. -DUART_BAUDRATE=19200 -DUART_TX=PB1 -DUART_RX=PB0
+CFLAGS=-Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
 TARGET=main
 
-SRCS=main.c uart.c
+SRCS=main.c 
 
 all:
-	${CC} ${CFLAGS} -o ${TARGET}.o ${SRCS}
+	${CC} ${CFLAGS} -o ${TARGET}.o ${SRCS} -c
 	${LD} -o ${TARGET}.elf ${TARGET}.o
 	${OBJCOPY} -j .text -j .data -O ihex ${TARGET}.o ${TARGET}.hex
 	${SIZE} -C --mcu=${MCU} ${TARGET}.elf

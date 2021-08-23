@@ -1,29 +1,24 @@
-/**
- * Copyright (c) 2016, Łukasz Marcin Podkalicki <lpodkalicki@gmail.com>
- * Software UART for ATtiny13
- */
+#include <avr/io.h>
 
-#ifndef	_UART_H_
-#define	_UART_H_
+void USART_Init(unsigned int ubrr) {
+	UBRRH = (unsigned char)(ubrr>>8);
+	UBRRL = (unsigned char)(ubrr);
+	UCSRB = (1 << RXEN)|(1 << TXEN);
+	UCSRC = (1 << UCSZ0)|(1 << UCSZ1);
+}
 
-//#define	UART_RX_ENABLED		(1) // Enable UART RX
-#define	UART_TX_ENABLED		(1) // Enable UART TX
+void USART_Transmit_char (unsigned char data) {
+	while(!(UCSRA & (1 << UDRE)));
+	UDR = data;
+}
 
+void USART_putstring(char* StringPtr) {
+	while(*StringPtr != 0x00){    //Here we check if there is still more chars to send, this is done checking the actual char and see if it is different from the null char
+		USART_Transmit_char(*StringPtr);    //Using the simple send function we send one char at a time
+	StringPtr++;}        //We increment the pointer so we can read the next char
+}
 
-# define        UART_BAUDRATE   (192000)
-
-#define	TXDELAY         	(int)(((F_CPU/UART_BAUDRATE)-7 +1.5)/3)
-#define RXDELAY         	(int)(((F_CPU/UART_BAUDRATE)-5 +1.5)/3)
-#define RXDELAY2        	(int)((RXDELAY*1.5)-2.5)
-#define RXROUNDED       	(((F_CPU/UART_BAUDRATE)-5 +2)/3)
-#if RXROUNDED > 127
-# error Low baud rates are not supported - use higher, UART_BAUDRATE
-#endif
-
-char uart_getc(void);
-void uart_putc(char c);
-void uart_putu(uint16_t x);
-void uart_puts(const char *s);
-
-#endif	/* !_UART_H_ */
-
+void USART_Receive(void) {
+	while(!(UCSRA & (1 << RXC)));
+	return UDR;
+}

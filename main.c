@@ -6,6 +6,54 @@
 #define OUTP PB4
 #define INP PB3
 
+
+
+
+
+
+
+
+
+
+#define C_MinBaudRate_U32 2400
+#define C_MaxBaudRate_U32 2500000UL
+#define util_ExtractByte0to8(x)    (uint8_t) ((x) & 0xFFu)
+#define util_ExtractByte8to16(x)   (uint8_t) (((x)>>8) & 0xFFu)
+#define M_GetBaudRateGeneratorValue(baudrate)  (((F_CPU -((baudrate) * 8L)) / ((baudrate) * 16UL)))
+#define  util_GetBitMask(bit)          (1<<(bit))
+#define  util_IsBitCleared(x,bit)      (((x)&(util_GetBitMask(bit)))==0u)
+void UART_SetBaudRate(uint32_t v_baudRate_u32)
+{
+	uint16_t RegValue;
+
+		RegValue = M_GetBaudRateGeneratorValue(v_baudRate_u32);
+	UBRRL = util_ExtractByte0to8(RegValue);
+	UBRRH = util_ExtractByte8to16(RegValue);
+}
+
+void UART_Init(uint32_t v_baudRate_u32)
+{
+	UCSRB= (1<<TXEN);                  // Enable Receiver and Transmitter
+	UCSRC= (1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0);   // Async-mode
+	UCSRA= 0x00;                 // Clear the UASRT status register
+	/* UART_SetBaudRate(v_baudRate_u32); */
+}
+void UART_TxChar(char v_uartData_u8)
+{
+	while(util_IsBitCleared(UCSRA,UDRE)); // Wait till Transmitter(UDR) register becomes Empty
+	UDR =v_uartData_u8;                              // Load the data to be transmitted
+}
+
+
+
+
+
+
+
+
+
+
+
 volatile uint16_t time;
 uint16_t map[] = {
 	100,

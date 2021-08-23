@@ -17,7 +17,7 @@ all:
 	${SIZE} -C --mcu=${MCU} ${TARGET}.elf
 
 flash:
-	${AVRDUDE} -p ${MCU} -c usbasp -B10 -U flash:w:${TARGET}.hex:i -F -P usb
+	${AVRDUDE} -p ${MCU} -c avrisp -b 19200 -U flash:w:${TARGET}.hex:i -P /dev/ttyUSB0
 
 clean:
 	rm -f *.c~ *.o *.elf *.hex

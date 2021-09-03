@@ -11,9 +11,9 @@ TARGET=main
 SRCS=main.c 
 
 all:
-	${CC} ${CFLAGS} -o ${TARGET}.o ${SRCS} -c
-	${LD} -o ${TARGET}.elf ${TARGET}.o
-	${OBJCOPY} -j .text -j .data -O ihex ${TARGET}.o ${TARGET}.hex
+	${CC} ${CFLAGS} -o ${TARGET}.elf ${SRCS} 
+	# ${LD} -o ${TARGET}.elf ${TARGET}.o
+	${OBJCOPY} -j .text -j .data -O ihex ${TARGET}.elf ${TARGET}.hex
 	${SIZE} -C --mcu=${MCU} ${TARGET}.elf
 
 flash:
